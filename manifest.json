@@ -1,8 +1,7 @@
-
 {
   "manifest_version": 3,
   "name": "Job Apply Helper",
-  "description": "",
+  "description": "Automatically fills job applications and handles resume uploads",
   "version": "1.0",
   "action": {
     "default_popup": "popup.html",
@@ -13,22 +12,39 @@
       "48": "images/icon48.png",
       "64": "images/icon64.png"
     },
-    "default_title": "Click to config"
+    "default_title": "Click to configure job application autofill"
   },
   "background": {
     "service_worker": "background.js"
   },
   "permissions": [
-
-    "storage", "scripting", "activeTab", "tabs"
+    "storage",
+    "scripting",
+    "activeTab",
+    "tabs",
+    "downloads",
+    "webRequest",
+    "webRequestAuthProvider"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*",
+    "http://localhost:4567/*",
+    "<all_urls>"
   ],
   "content_scripts": [
     {
       "js": ["jquery-3.7.1.min.js", "scripts/content.js"],
+      "matches": ["<all_urls>"],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["profiles.json", "images/*"],
       "matches": ["<all_urls>"]
     }
   ]
 }
-
 
 

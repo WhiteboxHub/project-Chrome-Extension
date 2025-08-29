@@ -1,13 +1,17 @@
 {
   "FirstName": "vijay",
   "LastName": "chandra",
-  "Email": "vijay@example.com",
-  "Location": "New York 123 Main St",
-  "Phone": "555-123-4567",
-  "Salary": "50000",
+  "Email": "vijayyadav300611@gmail.com",
+  "Location": "New York 143 Main St",
+  "Phone": "662-885-4567",
+  "Salary": "200k",
   "Gender": "Male",
   "Linkedin": "https://www.linkedin.com/in/vijay",
-  "WorkAuth": "Yes"
+  "WorkAuth": "Yes",
+  "VisaSponsorship": "No",
+  "Relocation": "Yes",
+  "JobSource": ["LinkedIn"],
+  "How did you hear about this job?": "LinkedIn"
 }
 
 

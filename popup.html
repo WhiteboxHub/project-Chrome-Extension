@@ -1,149 +1,501 @@
 
- <html>
-    <head>
-        <style>
-            .form-container {
-            min-width: 300px;
-            margin: 0 auto;
-          }
-
-          .form-group {
-            margin-bottom: 10px;
-          }
-
-          .form-group label {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Job Application Autofill</title>
+    <style>
+        body {
+            width: 450px;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+        }
+        
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-          }
-
-          .form-group input {
-            width: 100%;
-            padding: 5px;
-          }
-
-          .btn-save {
-            margin-top: 10px;
-            padding: 5px 10px;
-          }
-          .header{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          }
-          .header button{
-            min-width: 60px;
-            height: 36px;
-            font-weight: bold;
-            color: red;
-          }
-        </style>
-    </head>
-    <body>
-        <script src="popup.js">
-        </script>
-        <h1>
-            Apply Helper
-        </h1>
+            color: #555;
+        }
         
-        <div class="header">
-            <button id="open-jobs">
-                Open jobs
-            </button>
-            <button id="fill-it">
-                Refill
-            </button>
-            <button id="import-json">
-                Import JSON
-            </button>
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-save {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-refill {
+            background-color: #2196F3;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-refill:hover {
+            background-color: #0b7dda;
+        }
+        
+        .btn-upload {
+            background-color: #FF9800;
+            color: white;
+        }
+        
+        .btn-upload:hover {
+            background-color: #e68a00;
+        }
+        
+        .btn-import {
+            background-color: #9C27B0;
+            color: white;
+        }
+        
+        .btn-import:hover {
+            background-color: #7b1fa2;
+        }
+        
+        .btn-export {
+            background-color: #607D8B;
+            color: white;
+        }
+        
+        .btn-export:hover {
+            background-color: #546E7A;
+        }
+        
+        .resume-info {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group {
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-group label {
+            display: inline-block;
+            font-weight: normal;
+            margin-right: 15px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-left: 10px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .status-success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .status-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .status-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .status-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 16px;
+            transition: 0.3s;
+        }
+        
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        
+        .tab button.active {
+            background-color: #ccc;
+        }
+        
+        .tabcontent {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+        }
+        
+        .auto-fill-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .settings-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        
+        .settings-group label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .settings-group h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'Profile')">Profile</button>
+        <!-- <button class="tablinks" onclick="openTab(event, 'Account')">Account</button> -->
+        <!-- <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button> -->
+    </div>
+    
+    <div id="Profile" class="tabcontent" style="display:block;">
+        <h2>Job Application Autofill</h2>
+        
+        <div id="status"></div>
+        
+        <div class="two-column">
+            <div class="form-group">
+                <label for="first-name">First Name</label>
+                <input type="text" id="first-name" placeholder="John">
+            </div>
+            
+            <div class="form-group">
+                <label for="last-name">Last Name</label>
+                <input type="text" id="last-name" placeholder="Doe">
+            </div>
         </div>
-
-
-
-        <div class="form-container">
-            <h2>
-                My Profile
-            </h2>
-            <div class="form-group">
-                <label for="first-name">
-                    First Name
-                </label>
-                <input id="first-name" type="text"/>
-            </div>
-            <div class="form-group">
-                <label for="last-name">
-                    Last Name
-                </label>
-                <input id="last-name" type="text"/>
-            </div>
-            <div class="form-group">
-                <label for="email">
-                    Email
-                </label>
-                <input id="email" type="email"/>
-            </div>
-            <div class="form-group">
-                <label for="phone">
-                    Phone
-                </label>
-                <input id="phone" type="tel"/>
-            </div>
-            <div class="form-group">
-                <label for="salary">
-                    Salary
-                </label>
-                <input id="salary" type="text"/>
-            </div>
-            <div class="form-group">
-                <label for="location">
-                    Location (City)
-                </label>
-                <input id="location" type="text"/>
-            </div>
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="john.doe@example.com">
+        </div>
+        
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" placeholder="(123) 456-7890">
+        </div>
+        
+        <div class="form-group">
+            <label for="salary">Desired Salary</label>
+            <input type="text" id="salary" placeholder="$75,000">
+        </div>
+        
+        <div class="form-group">
+            <label for="location">Location (City)</label>
+            <input type="text" id="location" placeholder="San Francisco, CA">
+        </div>
+        
+        <div class="two-column">
             <div class="form-group">
                 <label for="gender">Gender</label>
                 <select id="gender">
-                    <option value="">Select...</option>
+                    <option value="">Select</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
-                    <option value="Other">Other</option>
+                    <option value="Non-binary">Non-binary</option>
                     <option value="Prefer not to say">Prefer not to say</option>
                 </select>
             </div>
             
             <div class="form-group">
-                <label for="linkedin">LinkedIn Profile</label>
-                <input id="linkedin" type="url"/>
+                <label for="work-authorization">Work Authorization</label>
+                <select id="work-authorization">
+                    <option value="">Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
             </div>
-
-            <div class="form-group">
-                <label for="resume">
-                    Resume
-                </label>
-                <input id="resume" type="file">
-                </input>
-                <span id="uploaded-resume"></span>
-            </div>
-
-
-
-            <div class="form-group">
-              <label for="work-authorization">
-                Are you legally authorized to work for any employer in the United States?
-              </label>
-              <select id="work-authorization">
-                <option value="">Select...</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-        >
-            <button class="btn-save">
-                Save
-            </button>
         </div>
-    </body>
+        
+        <div class="two-column">
+            <div class="form-group">
+                <label for="visa-sponsorship">Visa Sponsorship Needed?</label>
+                <select id="visa-sponsorship">
+                    <option value="">Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="relocation">Willing to Relocate?</label>
+                <select id="relocation">
+                    <option value="">Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="linkedin">LinkedIn URL</label>
+            <input type="text" id="linkedin" placeholder="https://linkedin.com/in/johndoe">
+        </div>
+        
+        <div class="form-group">
+            <label>How did you hear about us?</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="jobSource" value="LinkedIn"> LinkedIn</label>
+                <label><input type="checkbox" name="jobSource" value="Indeed"> Indeed</label>
+                <label><input type="checkbox" name="jobSource" value="Glassdoor"> Glassdoor</label>
+                <label><input type="checkbox" name="jobSource" value="Company Website"> Company Website</label>
+                <label><input type="checkbox" name="jobSource" value="Referral"> Referral</label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="resume">Upload Resume</label>
+            <input type="file" id="resume" accept=".pdf,.doc,.docx,.txt">
+            <div class="resume-info">
+                <span id="uploaded-resume">No resume uploaded</span>
+            </div>
+        </div>
+        
+        <div class="auto-fill-container">
+            <label for="auto-fill">Auto-fill on job sites:</label>
+            <label class="toggle-switch">
+                <input type="checkbox" id="auto-fill">
+                <span class="slider"></span>
+            </label>
+        </div>
+        
+        <button class="btn btn-save">Save Profile</button>
+        <!-- <button class="btn btn-import" id="import-json">Import Profile</button> -->
+        <!-- <button class="btn btn-export" id="export-data">Export All Data</button> -->
+        <!-- <button class="btn btn-import" id="import-data">Import All Data</button> -->
+        <button class="btn btn-import" id="reload-profile">Reload from profiles.json</button>
+        
+        <button class="btn btn-refill" id="fill-it">Refill Form</button>
+        <button class="btn btn-upload" id="upload-resume" style="width: 100%; margin-top: 5px;">Upload Resume to Server</button>
+    </div>
+    
+    <div id="Account" class="tabcontent">
+        <h2>Account Information</h2>
+        
+        <form id="accountForm">
+            <div class="form-group">
+                <label for="account-email">Email</label>
+                <input type="email" id="account-email" placeholder="Email for account creation">
+            </div>
+            
+            <div class="form-group">
+                <label for="account-password">Password</label>
+                <input type="password" id="account-password" placeholder="Password">
+            </div>
+            
+            <div class="form-group">
+                <label for="account-confirm-password">Confirm Password</label>
+                <input type="password" id="account-confirm-password" placeholder="Confirm password">
+            </div>
+            
+            <button type="submit" class="btn btn-save">Save Account Info</button>
+        </form>
+    </div>
+    
+    <div id="Settings" class="tabcontent">
+        <h2>Extension Settings</h2>
+        
+        <div class="settings-group">
+            <h3>Display Settings</h3>
+            <label>
+                Highlight form fields
+                <label class="toggle-switch">
+                    <input type="checkbox" id="highlight-fields" checked>
+                    <span class="slider"></span>
+                </label>
+            </label>
+            
+            <label>
+                Show notifications
+                <label class="toggle-switch">
+                    <input type="checkbox" id="show-notifications" checked>
+                    <span class="slider"></span>
+                </label>
+            </label>
+        </div>
+        
+        <div class="settings-group">
+            <h3>Upload Settings</h3>
+            <label>
+                Auto-upload to server
+                <label class="toggle-switch">
+                    <input type="checkbox" id="auto-upload">
+                    <span class="slider"></span>
+                </label>
+            </label>
+        </div>
+        
+        <div class="settings-group">
+            <h3>Profile JSON Settings</h3>
+            <label>
+                Watch profiles.json for changes
+                <label class="toggle-switch">
+                    <input type="checkbox" id="watch-profile-json" checked>
+                    <span class="slider"></span>
+                </label>
+            </label>
+        </div>
+        
+        <div class="settings-group">
+            <h3>Data Management</h3>
+            <p>Export or import all your extension data including profile, resume, and settings.</p>
+            <button class="btn btn-export" id="export-settings">Export All Data</button>
+            <button class="btn btn-import" id="import-settings">Import All Data</button>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+            
+            // Update the export/import buttons in settings tab
+            if (tabName === 'Settings') {
+                document.getElementById('export-settings').addEventListener('click', function() {
+                    document.getElementById('export-data').click();
+                });
+                
+                document.getElementById('import-settings').addEventListener('click', function() {
+                    document.getElementById('import-data').click();
+                });
+            }
+        }
+    </script>
+</body>
 </html>
 
 
- 
